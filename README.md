@@ -21,7 +21,7 @@ Compile, run, and check output — nothing else.
 
 ```lua
 {
-  "username/cprun.nvim",
+  "3p5ilon/cprun.nvim",
   ft = "cpp",
   opts = {},
 }
@@ -31,7 +31,7 @@ Compile, run, and check output — nothing else.
 
 ```lua
 use({
-  "username/cprun.nvim",
+  "3p5ilon/cprun.nvim",
   ft = "cpp",
   config = function()
     require("cprun").setup({})
