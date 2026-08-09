@@ -17,7 +17,7 @@ Compile, run, and check output — nothing else.
 
 ## Install
 
-- **lazy.nvim**:
+**lazy.nvim**:
 
 ```lua
 {
@@ -27,9 +27,9 @@ Compile, run, and check output — nothing else.
 }
 ```
 
-- packer.nvim:
+packer.nvim:
 
-```
+```lua
 use({
   "username/cprun.nvim",
   ft = "cpp",
