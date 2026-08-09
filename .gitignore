@@ -1,0 +1,11 @@
+# Temporary CP files
+inp
+out
+*.out
+*.exe
+*.dSYM/
+a.out
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,77 @@
+*cprun.txt*   Fast, lightweight competitive programming workflow for Neovim
+
+==============================================================================
+CPRUN.NVIM                                                        *cprun*
+
+cprun.nvim is a minimalist, fast C++ compile & run workflow plugin for
+competitive programming in Neovim.
+
+FEATURES                                                  *cprun-features*
+
+- Split-screen input/output file layout (`inp` and `out`).
+- Automatic creation and auto-saving of `inp` / `out` test files.
+- Fast interactive terminal compile & run (`g++ -O2`).
+- Timing compilation with gcc warnings (`-Wall -Wextra -Wshadow`).
+- Timing compilation with AddressSanitizer (`clang++ -fsanitize=address`).
+- Local directory alignment (`wall` + `lcd %:p:h`).
+
+==============================================================================
+SETUP & CONFIGURATION                                      *cprun-config*
+
+To configure cprun.nvim, call `setup()` in your Neovim configuration: >lua
+
+    require("cprun").setup({
+      compiler = "g++",           -- Default C++ compiler
+      asan_compiler = "clang++",  -- AddressSanitizer compiler
+      cpp_std = "c++17",          -- C++ language standard
+      flags = { "-Wall", "-Wextra", "-Wshadow", "-O2" },
+      fast_flags = { "-O2" },
+      asan_flags = { "-Wall", "-Wextra", "-Wshadow", "-fsanitize=address", "-O2" },
+      term_height = 12,           -- Bottom terminal height for run_fast
+      layout_width = 0.35,        -- Split ratio for input/output panes
+      input_file = "inp",         -- Name of input file
+      output_file = "out",        -- Name of output file
+      auto_create_files = true,   -- Auto create inp/out if missing
+      auto_save = true,           -- Auto save inp/out on change
+      keymaps = {
+        enable = true,
+        toggle_layout = "<leader>cp",
+        run_fast = "<F6>",
+        run_asan = "<F7>",
+        run_warnings = "<F8>",
+      },
+    })
+<
+
+==============================================================================
+COMMANDS                                                   *cprun-commands*
+
+:CPToggle                                                         *:CPToggle*
+    Toggle the input/output split layout next to the code pane.
+
+:CPRunFast                                                     *:CPRunFast*
+    Save buffers, cd to file dir, compile with fast flags and open an
+    interactive bottom terminal split.
+
+:CPRunWarnings                                             *:CPRunWarnings*
+    Save buffers, cd to file dir, compile with warnings, and run redirecting
+    input -> stdin and stdout -> output file.
+
+:CPRunAsan                                                     *:CPRunAsan*
+    Save buffers, cd to file dir, compile with AddressSanitizer using
+    asan_compiler, and run redirecting input -> stdin and stdout -> output file.
+
+==============================================================================
+KEYMAPS                                                     *cprun-keymaps*
+
+Default buffer-local keymaps for `cpp` filetypes:
+
+Keymap             Action                               Mode
+------------------ ------------------------------------ -----------
+<leader>cp         Toggle layout (code | inp + out)     Normal
+<F6>               Run fast (interactive term split)    Normal, Insert
+<F7>               Run AddressSanitizer (clang++)       Normal, Insert
+<F8>               Run with warnings (g++)              Normal, Insert
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
