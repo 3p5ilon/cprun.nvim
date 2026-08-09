@@ -27,7 +27,7 @@ Compile, run, and check output — nothing else.
 }
 ```
 
-packer.nvim:
+**packer.nvim**:
 
 ```lua
 use({
