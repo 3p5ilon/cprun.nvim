@@ -1,19 +1,20 @@
 # cprun.nvim ⚡
 
-Minimal, fast C++ competitive programming workflow plugin for Neovim.
+A minimal, fast Neovim plugin for competitive programming in C++.
+Compile, run, and check output — nothing else.
 
-## ⚡ Features
+## Features
 
-- **Split Layout (`<leader>cp`)**: Toggle `inp` and `out` side-by-side panes (~35% width). Auto-creates files if missing.
-- **Auto-Save**: Saves `inp` and `out` automatically on edit (`TextChanged`, `InsertLeave`).
-- **Fast Run (`<F6>`)**: Compiles (`g++ -O2`) and opens an interactive bottom terminal split.
-- **Run with Warnings (`<F8>`)**: Compiles (`g++ -Wall -Wextra -Wshadow -O2`) and runs silently with `< inp > out`.
-- **AddressSanitizer (`<F7>`)**: Compiles (`clang++ -fsanitize=address`) to catch memory leaks and out-of-bounds errors.
-- **Precise Timing**: Displays execution time in milliseconds (`42ms`) or seconds (`1.85s`).
+- **Split layout** (`<leader>cp`) — toggles `inp`/`out` side-by-side panes. Auto-creates files if missing.
+- **Auto-save** — `inp` and `out` save automatically as you edit them.
+- **Fast run** (`<F6>`) — compiles with `g++ -O2`, opens an interactive terminal.
+- **Warnings build** (`<F8>`) — compiles with `-Wall -Wextra -Wshadow -O2`, runs silently via `inp` → `out`.
+- **AddressSanitizer build** (`<F7>`) — compiles with `-fsanitize=address`, catches memory bugs.
+- **Clean timing** — shows run time as `42ms` or `1.85s`.
 
-## 📦 Installation
+## Install
 
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+**[lazy.nvim](https://github.com/folke/lazy.nvim)**
 
 ```lua
 {
@@ -23,7 +24,7 @@ Minimal, fast C++ competitive programming workflow plugin for Neovim.
 }
 ```
 
-## ⚙️ Default Configuration
+## Configuration
 
 ```lua
 require("cprun").setup({
@@ -49,15 +50,51 @@ require("cprun").setup({
 })
 ```
 
-## ⌨️ Default Keymaps
+## Keymaps
 
-| Keymap | Mode | Command | Description |
-| :--- | :--- | :--- | :--- |
-| `<leader>cp` | `Normal` | `:CPToggle` | Toggle `inp` / `out` layout |
-| `<F6>` | `Normal`, `Insert` | `:CPRunFast` | Fast compile & open interactive terminal |
-| `<F7>` | `Normal`, `Insert` | `:CPRunAsan` | Compile with ASan (`< inp > out`) |
-| `<F8>` | `Normal`, `Insert` | `:CPRunWarnings` | Compile with warnings (`< inp > out`) |
+| Key          | Command          | What it does                                 |
+| ------------ | ---------------- | -------------------------------------------- |
+| `<leader>cp` | `:CPToggle`      | Toggle `inp`/`out` layout                    |
+| `<F6>`       | `:CPRunFast`     | Fast compile + interactive terminal          |
+| `<F7>`       | `:CPRunAsan`     | Compile with ASan, run via `inp` → `out`     |
+| `<F8>`       | `:CPRunWarnings` | Compile with warnings, run via `inp` → `out` |
 
-## 📄 License
+Any keymap can be remapped or set to `false`.
+
+## Snippets (optional, not bundled)
+
+cprun.nvim doesn't include snippets. You can use [LuaSnip](https://github.com/L3MON4D3/LuaSnip) for that — drop this in `~/.config/nvim/lua/snippets/cpp.lua` and `require("snippets.cpp")` from your `init.lua`:
+
+```lua
+local ls = require("luasnip")
+local s, t, i = ls.snippet, ls.text_node, ls.insert_node
+
+ls.add_snippets("cpp", {
+  s("tem", {
+    t({
+      "#include <bits/stdc++.h>",
+      "using namespace std;",
+      "",
+      "int main() {",
+      "    ios_base::sync_with_stdio(false);",
+      "    cin.tie(NULL);",
+      "",
+      "    ",
+    }),
+    i(1),
+    t({ "", "    return 0;", "}", "" }),
+  }),
+})
+```
+
+See the [LuaSnip docs](https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md) for more.
+
+## Philosophy
+
+This plugin intentionally does **not** include: multiple testcase management, verdict checking, online-judge integration, or snippets.
+For any of those, check out [competitest.nvim](https://github.com/xeluxee/competitest.nvim) — a much more feature-complete tool. cprun.nvim exists for people who just want the fast compile-run loop and nothing more.
+
+## License
 
 [MIT License](LICENSE)
+
