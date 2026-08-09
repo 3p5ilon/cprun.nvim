@@ -1,7 +1,10 @@
-# cprun.nvim ⚡
+# cprun.nvim
 
 A minimal, fast Neovim plugin for competitive programming in C++.
+
 Compile, run, and check output — nothing else.
+
+<img alt="cprun demo img" src="https://github.com/user-attachments/assets/93896ade-dc84-404a-b875-b90696ce12dd" />
 
 ## Features
 
@@ -14,7 +17,7 @@ Compile, run, and check output — nothing else.
 
 ## Install
 
-**[lazy.nvim](https://github.com/folke/lazy.nvim)**
+- **lazy.nvim**:
 
 ```lua
 {
@@ -22,6 +25,18 @@ Compile, run, and check output — nothing else.
   ft = "cpp",
   opts = {},
 }
+```
+
+- packer.nvim:
+
+```
+use({
+  "username/cprun.nvim",
+  ft = "cpp",
+  config = function()
+    require("cprun").setup({})
+  end,
+})
 ```
 
 ## Configuration
@@ -96,5 +111,4 @@ For any of those, check out [competitest.nvim](https://github.com/xeluxee/compet
 
 ## License
 
-[MIT License](LICENSE)
-
+[MIT](LICENSE)
