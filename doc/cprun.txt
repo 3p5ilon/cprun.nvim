@@ -1,22 +1,21 @@
-*cprun.txt*   Fast, lightweight competitive programming workflow for Neovim
+*cprun.txt*   Minimal C++ competitive programming compile & run workflow for Neovim
 
 ==============================================================================
 CPRUN.NVIM                                                        *cprun*
 
-cprun.nvim is a minimalist, fast C++ compile & run workflow plugin for
-competitive programming in Neovim.
+Minimal, fast C++ compile & run plugin for competitive programming in Neovim.
 
 FEATURES                                                  *cprun-features*
 
-- Split-screen input/output file layout (`inp` and `out`).
-- Automatic creation and auto-saving of `inp` / `out` test files.
-- Fast interactive terminal compile & run (`g++ -O2`).
-- Timing compilation with gcc warnings (`-Wall -Wextra -Wshadow`).
-- Timing compilation with AddressSanitizer (`clang++ -fsanitize=address`).
-- Local directory alignment (`wall` + `lcd %:p:h`).
+- Toggle split layout (`inp` | `out`) beside the code pane.
+- Auto-creates `inp` and `out` files if missing; auto-saves on edit.
+- Fast interactive terminal run (`g++ -O2`).
+- Warning build (`-Wall -Wextra -Wshadow -O2`) via `< inp > out`.
+- AddressSanitizer build (`clang++ -fsanitize=address`) via `< inp > out`.
+- Execution time shown as `42ms` or `1.85s`.
 
 ==============================================================================
-SETUP & CONFIGURATION                                      *cprun-config*
+CONFIGURATION                                              *cprun-config*
 
 To configure cprun.nvim, call `setup()` in your Neovim configuration: >lua
 
@@ -66,12 +65,12 @@ KEYMAPS                                                     *cprun-keymaps*
 
 Default buffer-local keymaps for `cpp` filetypes:
 
-Keymap             Action                               Mode
------------------- ------------------------------------ -----------
-<leader>cp         Toggle layout (code | inp + out)     Normal
-<F6>               Run fast (interactive term split)    Normal, Insert
-<F7>               Run AddressSanitizer (clang++)       Normal, Insert
-<F8>               Run with warnings (g++)              Normal, Insert
+Keymap             Mode            Description
+------------------ --------------- ------------------------------------
+<leader>cp         Normal          Toggle inp / out layout
+<F6>               Normal, Insert  Fast compile & interactive terminal
+<F7>               Normal, Insert  AddressSanitizer build (clang++)
+<F8>               Normal, Insert  Warning build (g++)
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
