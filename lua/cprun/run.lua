@@ -2,7 +2,7 @@ local layout = require("cprun.layout")
 
 local M = {}
 
-function M.pre_run()
+local function pre_run()
   vim.cmd("wall")
 end
 
@@ -37,7 +37,7 @@ end
 
 function M.execute_with_redirection(compiler, std_ver, flag_list, config)
   config = config or require("cprun.config").options
-  M.pre_run()
+  pre_run()
 
   local file = vim.api.nvim_buf_get_name(0)
   if file == "" then
@@ -99,7 +99,7 @@ end
 
 function M.run_fast(config)
   config = config or require("cprun.config").options
-  M.pre_run()
+  pre_run()
 
   local file = vim.api.nvim_buf_get_name(0)
   if file == "" then
