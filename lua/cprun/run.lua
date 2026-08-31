@@ -1,9 +1,39 @@
 local layout = require("cprun.layout")
 
 local M = {}
+local is_win = vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
 
-local function pre_run()
-  vim.cmd("wall")
+local function is_cpp_buf(buf)
+  local name = vim.api.nvim_buf_get_name(buf)
+  return name ~= "" and (vim.bo[buf].filetype == "cpp" or name:match("%.cpp$") or name:match("%.cc$") or name:match("%.cxx$"))
+end
+
+local function get_cpp_and_exec()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  local file = is_cpp_buf(cur_buf) and vim.api.nvim_buf_get_name(cur_buf) or ""
+
+  if file == "" then
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      local b = vim.api.nvim_win_get_buf(win)
+      if is_cpp_buf(b) then
+        file = vim.api.nvim_buf_get_name(b)
+        break
+      end
+    end
+  end
+
+  if file == "" then
+    vim.notify("No valid C++ file found", vim.log.levels.ERROR, { title = "cprun.nvim" })
+    return nil, nil, nil
+  end
+
+  local dir = vim.fs.normalize(vim.fn.fnamemodify(file, ":p:h")):gsub("/+$", "")
+  local exec = vim.fn.fnamemodify(file, ":p:r")
+  if is_win and not exec:lower():match("%.exe$") then
+    exec = exec .. ".exe"
+  end
+
+  return file, dir, exec
 end
 
 function M.compile(compiler, std_ver, flag_list, file, exec, config)
@@ -25,8 +55,7 @@ function M.compile(compiler, std_ver, flag_list, file, exec, config)
       title = "cprun compilation errors",
       lines = lines,
     })
-    local qf_h = config.qf_height or 10
-    vim.cmd("copen " .. qf_h)
+    vim.cmd("copen " .. (config.qf_height or 10))
     vim.notify("✗ Compilation failed", vim.log.levels.ERROR, { title = "cprun.nvim" })
     return false
   end
@@ -37,25 +66,21 @@ end
 
 function M.execute_with_redirection(compiler, std_ver, flag_list, config)
   config = config or require("cprun.config").options
-  pre_run()
+  vim.cmd("wall")
 
-  local file = vim.api.nvim_buf_get_name(0)
-  if file == "" then
-    vim.notify("No valid C++ file to compile", vim.log.levels.ERROR, { title = "cprun.nvim" })
+  local file, dir, exec = get_cpp_and_exec()
+  if not file then
     return
   end
 
-  local dir = vim.fn.fnamemodify(file, ":p:h"):gsub("/+$", "")
-  local exec = vim.fn.fnamemodify(file, ":p:r")
+  local inp = vim.fs.normalize(dir .. "/" .. config.input_file)
+  local out = vim.fs.normalize(dir .. "/" .. config.output_file)
 
-  local inp_path = dir .. "/" .. config.input_file
-  local out_path = dir .. "/" .. config.output_file
-
-  if vim.fn.filereadable(inp_path) == 0 then
-    vim.fn.writefile({}, inp_path)
+  if vim.fn.filereadable(inp) == 0 then
+    vim.fn.writefile({}, inp)
   end
-  if vim.fn.filereadable(out_path) == 0 then
-    vim.fn.writefile({}, out_path)
+  if vim.fn.filereadable(out) == 0 then
+    vim.fn.writefile({}, out)
   end
 
   if not M.compile(compiler, std_ver, flag_list, file, exec, config) then
@@ -63,20 +88,19 @@ function M.execute_with_redirection(compiler, std_ver, flag_list, config)
   end
 
   local hrtime = (vim.uv and vim.uv.hrtime) or vim.loop.hrtime
-  local start_time = hrtime()
+  local start = hrtime()
 
   local run_cmd = string.format(
     "%s < %s > %s 2>&1",
     vim.fn.shellescape(exec),
-    vim.fn.shellescape(inp_path),
-    vim.fn.shellescape(out_path)
+    vim.fn.shellescape(inp),
+    vim.fn.shellescape(out)
   )
   vim.fn.system(run_cmd)
   local exit_code = vim.v.shell_error
+  local elapsed_ms = (hrtime() - start) / 1e6
 
-  local elapsed_ms = (hrtime() - start_time) / 1e6
-
-  layout.refresh_buffer(out_path)
+  layout.refresh_buffer(out)
 
   local time_str = elapsed_ms < 1000
     and string.format("%dms", math.floor(elapsed_ms + 0.5))
@@ -99,15 +123,12 @@ end
 
 function M.run_fast(config)
   config = config or require("cprun.config").options
-  pre_run()
+  vim.cmd("wall")
 
-  local file = vim.api.nvim_buf_get_name(0)
-  if file == "" then
-    vim.notify("No valid C++ file to compile", vim.log.levels.ERROR, { title = "cprun.nvim" })
+  local file, _, exec = get_cpp_and_exec()
+  if not file then
     return
   end
-
-  local exec = vim.fn.fnamemodify(file, ":p:r")
 
   if not M.compile(config.compiler, config.cpp_std, config.fast_flags, file, exec, config) then
     return
@@ -128,4 +149,3 @@ function M.run_asan(config)
 end
 
 return M
-

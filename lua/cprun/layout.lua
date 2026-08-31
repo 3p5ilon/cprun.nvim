@@ -4,13 +4,31 @@ local function get_dir_and_paths(config)
   config = config or require("cprun.config").options
   local current_buf = vim.api.nvim_get_current_buf()
   local current_path = vim.api.nvim_buf_get_name(current_buf)
-  local dir = (current_path ~= "") and vim.fn.fnamemodify(current_path, ":p:h") or vim.fn.getcwd()
-  dir = dir:gsub("/+$", "")
 
-  return dir, dir .. "/" .. config.input_file, dir .. "/" .. config.output_file
+  if current_path == "" or vim.bo[current_buf].buftype ~= "" then
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      local b = vim.api.nvim_win_get_buf(win)
+      if vim.bo[b].buftype == "" then
+        local p = vim.api.nvim_buf_get_name(b)
+        if p ~= "" then
+          current_path = p
+          break
+        end
+      end
+    end
+  end
+
+  local raw_dir = (current_path ~= "") and vim.fn.fnamemodify(current_path, ":p:h") or vim.fn.getcwd()
+  local dir = vim.fs.normalize(raw_dir):gsub("/+$", "")
+
+  local inp_path = vim.fs.normalize(dir .. "/" .. config.input_file)
+  local out_path = vim.fs.normalize(dir .. "/" .. config.output_file)
+
+  return dir, inp_path, out_path
 end
 
 function M.refresh_buffer(target_path)
+  target_path = vim.fs.normalize(target_path)
   local bufnr = vim.fn.bufnr(target_path)
   if bufnr ~= -1 and vim.api.nvim_buf_is_loaded(bufnr) then
     vim.api.nvim_buf_call(bufnr, function()
@@ -79,4 +97,3 @@ function M.toggle_layout(config)
 end
 
 return M
-
