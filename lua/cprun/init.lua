@@ -6,27 +6,22 @@ local M = {}
 
 M.config = config.options
 
-function M.pre_run()
-  run.pre_run()
-end
-
 function M.toggle_layout()
-  layout.toggle_layout(config.options)
+  layout.toggle_layout(M.config)
 end
 
 function M.run_fast()
-  run.run_fast(config.options)
+  run.run_fast(M.config)
 end
 
 function M.run_warnings()
-  run.run_warnings(config.options)
+  run.run_warnings(M.config)
 end
 
 function M.run_asan()
-  run.run_asan(config.options)
+  run.run_asan(M.config)
 end
 
--- setup: merge options, register auto-save and buffer-local cpp keymaps
 function M.setup(opts)
   local cfg = config.setup(opts)
   M.config = cfg
@@ -36,9 +31,11 @@ function M.setup(opts)
     vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave" }, {
       group = group,
       pattern = { cfg.input_file, cfg.output_file },
-      callback = function()
-        if vim.bo.modified then
-          vim.cmd("silent write")
+      callback = function(ev)
+        if vim.api.nvim_buf_is_valid(ev.buf) and vim.bo[ev.buf].modified then
+          vim.api.nvim_buf_call(ev.buf, function()
+            vim.cmd("silent update")
+          end)
         end
       end,
     })
@@ -71,3 +68,4 @@ function M.setup(opts)
 end
 
 return M
+

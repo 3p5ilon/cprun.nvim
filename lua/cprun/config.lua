@@ -7,7 +7,8 @@ M.defaults = {
   flags = { "-Wall", "-Wextra", "-Wshadow", "-O2" },
   fast_flags = { "-O2" },
   asan_flags = { "-Wall", "-Wextra", "-Wshadow", "-fsanitize=address", "-O2" },
-  term_height = 12,
+  term_height = 10,
+  qf_height = 10,
   layout_width = 0.35,
   input_file = "inp",
   output_file = "out",
@@ -25,10 +26,9 @@ M.defaults = {
 M.options = vim.deepcopy(M.defaults)
 
 function M.setup(opts)
-  if opts then
-    M.options = vim.tbl_deep_extend("force", M.options, opts)
-  end
+  M.options = vim.tbl_deep_extend("force", vim.deepcopy(M.defaults), opts or {})
   return M.options
 end
 
 return M
+

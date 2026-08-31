@@ -8,12 +8,13 @@ Compile, run, and check output — nothing else.
 
 ## Features
 
-- **Split layout** (`<leader>cp`) — toggles `inp`/`out` side-by-side panes. Auto-creates files if missing.
+- **Split layout** (`<leader>cp`) — toggles `inp`/`out` side-by-side panes relative to active `.cpp` directory. Auto-creates files if missing.
 - **Auto-save** — `inp` and `out` save automatically as you edit them.
+- **Quickfix error handling** — compilation errors open in quickfix without blocking prompts or scrolling traps.
 - **Fast run** (`<F6>`) — compiles with `g++ -O2`, opens an interactive terminal.
 - **Warnings build** (`<F8>`) — compiles with `-Wall -Wextra -Wshadow -O2`, runs silently via `inp` → `out`.
 - **AddressSanitizer build** (`<F7>`) — compiles with `-fsanitize=address`, catches memory bugs.
-- **Clean timing** — shows run time as `42ms` or `1.85s`.
+- **Clean timing** — shows run time as `✓ Finished in 42ms` or `✗ Finished in 1.85s (exit code 1)`.
 
 ## Install
 
@@ -49,7 +50,8 @@ require("cprun").setup({
   flags = { "-Wall", "-Wextra", "-Wshadow", "-O2" },
   fast_flags = { "-O2" },
   asan_flags = { "-Wall", "-Wextra", "-Wshadow", "-fsanitize=address", "-O2" },
-  term_height = 12,
+  term_height = 10,
+  qf_height = 10,
   layout_width = 0.35,
   input_file = "inp",
   output_file = "out",
